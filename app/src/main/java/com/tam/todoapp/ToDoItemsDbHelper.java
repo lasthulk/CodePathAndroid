@@ -18,9 +18,7 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "todoItemsDatabase";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_TASKS = "tasks";
-    private static final String COL_ID = "id";
-    private static final String COL_TASKNAME = "taskName";
-    private static final String COL_STATUS = "status";
+
     private static final String TAG = "Todo";
     public static synchronized ToDoItemsDbHelper getInstance(Context context) {
         if (curInstance == null) {
@@ -36,9 +34,9 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sql = "CREATE TABLE IF NOT EXISTS " + TABLE_TASKS + " ("
-                + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL_TASKNAME + " TEXT, "
-                + COL_STATUS + " TEXT )";
+                + Task.COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + Task.COL_TASKNAME + " TEXT, "
+                + Task.COL_STATUS + " TEXT )";
         db.execSQL(sql);
     }
 
@@ -59,8 +57,9 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     Task task = new Task();
-                    task.setStatus(cursor.getString(cursor.getColumnIndex(COL_STATUS)));
-                    task.setTaskName(cursor.getString(cursor.getColumnIndex(COL_TASKNAME)));
+                    task.setStatus(cursor.getString(cursor.getColumnIndex(Task.COL_STATUS)));
+                    task.setTaskName(cursor.getString(cursor.getColumnIndex(Task.COL_TASKNAME)));
+                    task.setId(cursor.getInt(cursor.getColumnIndex(Task.COL_ID)));
                     tasks.add(task);
                 } while(cursor.moveToNext());
             }
@@ -79,8 +78,8 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             ContentValues values = new ContentValues();
-            values.put(COL_TASKNAME, task.getTaskName());
-            values.put(COL_STATUS, task.getStatus());
+            values.put(Task.COL_TASKNAME, task.getTaskName());
+            values.put(Task.COL_STATUS, task.getStatus());
             db.insertOrThrow(TABLE_TASKS, null, values);
             db.setTransactionSuccessful();
         } catch(Exception ex) {
@@ -96,10 +95,11 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
         try {
             String whereClause = "id = ?";
             ContentValues values = new ContentValues();
-            values.put(COL_TASKNAME, task.getTaskName());
-            values.put(COL_STATUS, task.getStatus());
+            values.put(Task.COL_TASKNAME, task.getTaskName());
+            values.put(Task.COL_STATUS, task.getStatus());
             String[] whereArgs = new String[] { String.valueOf(task.getId()) };
             db.update(TABLE_TASKS, values, whereClause, whereArgs);
+            db.setTransactionSuccessful();
         } catch(Exception ex) {
             Log.d(TAG, "Error while trying to update task. Error: " + ex.getMessage());
         } finally {
@@ -114,6 +114,7 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
             String whereClause = "id = ?";
             String[] whereArgs = new String[] { String.valueOf(taskId)};
             db.delete(TABLE_TASKS, whereClause, whereArgs);
+            db.setTransactionSuccessful();
         } catch(Exception ex) {
             Log.d(TAG, "Error while trying to delete task. Error: " + ex.getMessage());
         } finally {

@@ -1,8 +1,13 @@
 package com.tam.todoapp;
 
+//import android.app.FragmentManager;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -12,7 +17,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AddEditTaskDialog.AddEditTaskDialogListener {
 
     private  final int REQUEST_CODE = 18;
     private int selectedIndexOfItem = -1;
@@ -29,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         dbHelper = ToDoItemsDbHelper.getInstance(this);
 //        poputlateArrayItem();
-
+        lvItem = (ListView)findViewById(R.id.lvItems);
         populateTasks();
-        etEditText =(EditText)findViewById(R.id.etEditText);
+        //etEditText =(EditText)findViewById(R.id.etEditText);
         lvItem.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -48,17 +53,65 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String selectedText = lvItem.getItemAtPosition(position).toString();
-                selectedIndexOfItem = position;
+//                String selectedText = lvItem.getItemAtPosition(position).toString();
+//                selectedIndexOfItem = position;
                 //Toast.makeText(MainActivity.this, "Cur Index: " + String.valueOf(selectedIndexOfItem), Toast.LENGTH_LONG).show();
                 // open form edit
-                Intent intent = new Intent(MainActivity.this, EditItemActivity.class);
-                intent.putExtra("itemText", selectedText);
-                intent.putExtra("itemPosition", position);
-                //startActivity(intent);
-                startActivityForResult(intent, REQUEST_CODE);
+//                Intent intent = new Intent(MainActivity.this, EditItemActivity.class);
+//                intent.putExtra("itemText", selectedText);
+//                intent.putExtra("itemPosition", position);
+//                //startActivity(intent);
+//                startActivityForResult(intent, REQUEST_CODE);
+
+                // use dialog
+                try {
+                    Task selectedTask = (Task)lvItem.getItemAtPosition(position);
+                    selectedIndexOfItem = position;
+                    showEditTaskDialog(selectedTask);
+                } catch (Exception ex) {
+                    showMessage(ex.getMessage());
+                }
             }
         });
+    }
+
+    @Override
+    public void onFinishedDialog() {
+        populateTasks();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menuAddTask:
+            {
+                //showMessage("add a new task");
+                showAddTaskDialog();
+                return true;
+            }
+            default:
+                return  false;
+        }
+    }
+
+    private void showAddTaskDialog() {
+        FragmentManager fm = getSupportFragmentManager(); //getFragmentManager();
+//        AddEditTaskDialog taskDialog = new AddEditTaskDialog();
+        AddEditTaskDialog taskDialog = AddEditTaskDialog.newInstance("Add task", null);
+        taskDialog.show(fm, "Todo");
+    }
+
+    private void showEditTaskDialog(Task task) {
+        FragmentManager fm = getSupportFragmentManager();//  getFragmentManager();
+//        AddEditTaskDialog taskDialog = new AddEditTaskDialog();
+        AddEditTaskDialog taskDialog = AddEditTaskDialog.newInstance("Edit task", task);
+        taskDialog.show(fm, "Todo");
     }
 
     @Override
@@ -83,8 +136,9 @@ public class MainActivity extends AppCompatActivity {
             this.tasksList = new ArrayList<Task>();
             readItemsFromDb();
             this.tasksAdapter = new TasksAdapter(this, this.tasksList);
-            lvItem = (ListView)findViewById(R.id.lvItems);
-            lvItem.setAdapter(this.tasksAdapter );
+
+            lvItem.setAdapter(this.tasksAdapter);
+            tasksAdapter.notifyDataSetChanged();
         } catch (Exception ex) {
             showMessage(ex.getMessage());
         }
@@ -127,18 +181,18 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
-    public void onAddItem(View view) {
-        try {
-            //Toast.makeText(MainActivity.this, "kek", Toast.LENGTH_LONG).show();
-            //todoAdapter.add(etEditText.getText().toString());
-            Task task = new Task();
-            task.setTaskName(etEditText.getText().toString());
-            this.dbHelper.addTask(task);
-            this.tasksAdapter.add(task);
-            etEditText.setText("");
-            //writeItemsToFile();
-        } catch (Exception ex) {
-            showMessage(ex.getMessage());
-        }
-    }
+//    public void onAddItem(View view) {
+//        try {
+//            //Toast.makeText(MainActivity.this, "kek", Toast.LENGTH_LONG).show();
+//            //todoAdapter.add(etEditText.getText().toString());
+//            Task task = new Task();
+//            task.setTaskName(etEditText.getText().toString());
+//            this.dbHelper.addTask(task);
+//            this.tasksAdapter.add(task);
+//            etEditText.setText("");
+//            //writeItemsToFile();
+//        } catch (Exception ex) {
+//            showMessage(ex.getMessage());
+//        }
+//    }
 }
