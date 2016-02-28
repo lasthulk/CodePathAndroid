@@ -10,6 +10,8 @@ public class Task {
     private String status;
 
     public Task() {
+        this.status = "Low";
+        this.taskName = "";
     }
 
     public Task(String taskName, String status) {
