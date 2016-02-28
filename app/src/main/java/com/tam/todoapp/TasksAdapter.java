@@ -38,7 +38,8 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         } else if (tvStatus.getText().toString().equals("High")) {
             tvStatus.setTextColor(Color.RED);
         } else {
-            tvStatus.setPaintFlags(tvStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            //tvStatus.setPaintFlags(tvStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            tvTaskName.setPaintFlags(tvTaskName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
         return convertView;

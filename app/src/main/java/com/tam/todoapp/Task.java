@@ -11,7 +11,7 @@ public class Task {
     public static final String COL_ID = "id";
     public static final String COL_TASKNAME = "taskName";
     public static final String COL_STATUS = "status";
-    public static final String ARRAY_STATUS[] = { "High", "Medium", "Low" };
+    public static final String ARRAY_STATUS[] = { "High", "Medium", "Low", "Done" };
     public Task() {
         this.status = "Low";
         this.taskName = "";

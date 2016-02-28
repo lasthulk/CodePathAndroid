@@ -43,8 +43,11 @@ public class MainActivity extends AppCompatActivity implements AddEditTaskDialog
 //                todoItems.remove(position);
 //                todoAdapter.notifyDataSetChanged();
 
-                showMessage(String.valueOf(position));
+                //showMessage(String.valueOf(position));
                 //tasksList.remove(position);
+                Task curentTask = (Task)lvItem.getItemAtPosition(position);
+                dbHelper.deleteTask(curentTask.getId());
+                populateTasks();
                 return true;
             }
         });
@@ -103,14 +106,16 @@ public class MainActivity extends AppCompatActivity implements AddEditTaskDialog
     private void showAddTaskDialog() {
         FragmentManager fm = getSupportFragmentManager(); //getFragmentManager();
 //        AddEditTaskDialog taskDialog = new AddEditTaskDialog();
-        AddEditTaskDialog taskDialog = AddEditTaskDialog.newInstance("Add task", null);
+        AddEditTaskDialog taskDialog = AddEditTaskDialog.newInstance(null);
+        taskDialog.setTitle("Add task");
         taskDialog.show(fm, "Todo");
     }
 
     private void showEditTaskDialog(Task task) {
         FragmentManager fm = getSupportFragmentManager();//  getFragmentManager();
 //        AddEditTaskDialog taskDialog = new AddEditTaskDialog();
-        AddEditTaskDialog taskDialog = AddEditTaskDialog.newInstance("Edit task", task);
+        AddEditTaskDialog taskDialog = AddEditTaskDialog.newInstance(task);
+        taskDialog.setTitle("Edit task");
         taskDialog.show(fm, "Todo");
     }
 

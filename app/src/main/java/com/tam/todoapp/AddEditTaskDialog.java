@@ -32,7 +32,7 @@ public class AddEditTaskDialog extends DialogFragment {
         dbHelper = ToDoItemsDbHelper.getInstance(getActivity());
     }
 
-    public static AddEditTaskDialog newInstance(String title, Task task) {
+    public static AddEditTaskDialog newInstance( Task task) {
         AddEditTaskDialog dialog = new AddEditTaskDialog();
         dialog.setTask(task);
         return dialog;
@@ -77,14 +77,20 @@ public class AddEditTaskDialog extends DialogFragment {
             public void onClick(View v) {
 
                 if (task != null) {
-                    task.setTaskName(etTaskName.getText().toString());
-                    task.setStatus(spinnerStatus.getSelectedItem().toString());
-                    dbHelper.updateTask(task);
+                    String taskName = etTaskName.getText().toString().trim();
+                    if (taskName.isEmpty() == false) {
+                        task.setTaskName(etTaskName.getText().toString());
+                        task.setStatus(spinnerStatus.getSelectedItem().toString());
+                        dbHelper.updateTask(task);
+                    }
                 } else {
                     task = new Task();
-                    task.setTaskName(etTaskName.getText().toString());
-                    task.setStatus(spinnerStatus.getSelectedItem().toString());
-                    dbHelper.addTask(task);
+                    String taskName = etTaskName.getText().toString().trim();
+                    if (taskName.isEmpty() == false) {
+                        task.setTaskName(taskName);
+                        task.setStatus(spinnerStatus.getSelectedItem().toString());
+                        dbHelper.addTask(task);
+                    }
                 }
                 AddEditTaskDialogListener activity = (AddEditTaskDialogListener)getActivity();
                 activity.onFinishedDialog();
