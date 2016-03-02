@@ -3,7 +3,7 @@
 **ToDo App** is an android app that allows building a todo list and basic todo items management functionality including adding new items, editing and deleting an existing item.
 
 Submitted by: **lasthulk**
-
+Time spent: **8** hours spent in total
 ## User Stories
 
 The following **required** functionality is completed:
@@ -21,9 +21,6 @@ The following **optional** features are implemented:
 * [ ] Add support for selecting the priority of each todo item (and display in listview item)
 * [ ] Tweak the style improving the UI / UX, play with colors, images or backgrounds
 
-The following **additional** features are implemented:
-
-* [ ] List anything else that you can get done to improve the app functionality!
 
 ## Video Walkthrough 
 
