@@ -18,7 +18,13 @@ import android.widget.Spinner;
 public class AddEditTaskDialog extends DialogFragment {
 
     public interface AddEditTaskDialogListener {
-        void onFinishedDialog();
+        void onFinishEditingTask();
+
+        /**
+         *
+         * @param task A task object after adding to data source (database, file system...) successfully
+         */
+        void onFinishAddingTask(Task task);
     }
 
     private String title;
@@ -27,12 +33,13 @@ public class AddEditTaskDialog extends DialogFragment {
     private Button btnSave;
     private ToDoItemsDbHelper dbHelper;
     private Spinner spinnerStatus;
+
     public AddEditTaskDialog() {
         this.title = "Task";
         dbHelper = ToDoItemsDbHelper.getInstance(getActivity());
     }
 
-    public static AddEditTaskDialog newInstance( Task task) {
+    public static AddEditTaskDialog newInstance(Task task) {
         AddEditTaskDialog dialog = new AddEditTaskDialog();
         dialog.setTask(task);
         return dialog;
@@ -45,10 +52,10 @@ public class AddEditTaskDialog extends DialogFragment {
     public void setTitle(String title) {
         this.title = title;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_edit_task, container, false);
-
         getDialog().setTitle(title);
         return rootView;
     }
@@ -56,14 +63,11 @@ public class AddEditTaskDialog extends DialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        etTaskName = (EditText)view.findViewById(R.id.etTaskName);
+        etTaskName = (EditText) view.findViewById(R.id.etTaskName);
         etTaskName.requestFocus();
-        btnSave = (Button)view.findViewById(R.id.btnSave);
-        spinnerStatus = (Spinner)view.findViewById(R.id.spStatus);
-        populateTakssStatus();
-
-//        String taskName = this.getArguments().getString("taskName");
-//        etTaskName.setText(taskName);
+        btnSave = (Button) view.findViewById(R.id.btnSave);
+        spinnerStatus = (Spinner) view.findViewById(R.id.spStatus);
+        populateTasksStatus();
         if (task != null) {
             // edit task
             String taskName = this.task.getTaskName();
@@ -75,33 +79,32 @@ public class AddEditTaskDialog extends DialogFragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                AddEditTaskDialogListener activity = (AddEditTaskDialogListener) getActivity();
                 if (task != null) {
                     String taskName = etTaskName.getText().toString().trim();
-                    if (taskName.isEmpty() == false) {
+                    if (!taskName.isEmpty()) {
                         task.setTaskName(etTaskName.getText().toString());
                         task.setStatus(spinnerStatus.getSelectedItem().toString());
                         dbHelper.updateTask(task);
+                        activity.onFinishEditingTask();
                     }
                 } else {
                     task = new Task();
                     String taskName = etTaskName.getText().toString().trim();
-                    if (taskName.isEmpty() == false) {
+                    if (!taskName.isEmpty()) {
                         task.setTaskName(taskName);
                         task.setStatus(spinnerStatus.getSelectedItem().toString());
                         dbHelper.addTask(task);
+                        activity.onFinishAddingTask(task);
                     }
                 }
-                AddEditTaskDialogListener activity = (AddEditTaskDialogListener)getActivity();
-                activity.onFinishedDialog();
                 dismiss();
             }
         });
     }
 
     private int getSelectedStatusIndex(String status) {
-        for (int i = 0; i < Task.ARRAY_STATUS.length; i++)
-        {
+        for (int i = 0; i < Task.ARRAY_STATUS.length; i++) {
             if (Task.ARRAY_STATUS[i].equals(status)) {
                 return i;
             }
@@ -109,12 +112,10 @@ public class AddEditTaskDialog extends DialogFragment {
         return 0;
     }
 
-    private void populateTakssStatus() {
+    private void populateTasksStatus() {
         ArrayAdapter<String> adapterStatus = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, Task.ARRAY_STATUS);
-        // Specify the layout to use when the list of choices appears
         adapterStatus.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
         spinnerStatus.setAdapter(adapterStatus);
     }
 }

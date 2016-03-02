@@ -20,6 +20,7 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
     private static final String TABLE_TASKS = "tasks";
 
     private static final String TAG = "Todo";
+
     public static synchronized ToDoItemsDbHelper getInstance(Context context) {
         if (curInstance == null) {
             curInstance = new ToDoItemsDbHelper(context.getApplicationContext());
@@ -61,9 +62,9 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
                     task.setTaskName(cursor.getString(cursor.getColumnIndex(Task.COL_TASKNAME)));
                     task.setId(cursor.getInt(cursor.getColumnIndex(Task.COL_ID)));
                     tasks.add(task);
-                } while(cursor.moveToNext());
+                } while (cursor.moveToNext());
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Log.d(TAG, "Error while trying to get all tasks. Error: " + ex.getMessage());
         } finally {
             if (cursor != null && cursor.isClosed() == false) {
@@ -82,7 +83,7 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
             values.put(Task.COL_STATUS, task.getStatus());
             db.insertOrThrow(TABLE_TASKS, null, values);
             db.setTransactionSuccessful();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Log.d(TAG, "Error while trying to add task. Error: " + ex.getMessage());
         } finally {
             db.endTransaction();
@@ -97,10 +98,10 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(Task.COL_TASKNAME, task.getTaskName());
             values.put(Task.COL_STATUS, task.getStatus());
-            String[] whereArgs = new String[] { String.valueOf(task.getId()) };
+            String[] whereArgs = new String[]{String.valueOf(task.getId())};
             db.update(TABLE_TASKS, values, whereClause, whereArgs);
             db.setTransactionSuccessful();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Log.d(TAG, "Error while trying to update task. Error: " + ex.getMessage());
         } finally {
             db.endTransaction();
@@ -112,10 +113,10 @@ public class ToDoItemsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             String whereClause = "id = ?";
-            String[] whereArgs = new String[] { String.valueOf(taskId)};
+            String[] whereArgs = new String[]{String.valueOf(taskId)};
             db.delete(TABLE_TASKS, whereClause, whereArgs);
             db.setTransactionSuccessful();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Log.d(TAG, "Error while trying to delete task. Error: " + ex.getMessage());
         } finally {
             db.endTransaction();

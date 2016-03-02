@@ -20,28 +20,39 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         super(context, 0, tasks);
     }
 
+    private static class ViewHolder {
+        TextView tvStatus;
+        TextView tvTaskName;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Task task = getItem(position);
+        ViewHolder viewHolder;
         if (convertView == null) {
+            viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_task, parent, false);
-        }
-        TextView tvStatus = (TextView)convertView.findViewById(R.id.tvStatus);
-        TextView tvTaskName = (TextView)convertView.findViewById(R.id.tvTaskName);
-
-        tvStatus.setText(task.getStatus());
-        tvTaskName.setText(task.getTaskName());
-        if (tvStatus.getText().toString().equals("Low")) {
-            tvStatus.setTextColor(Color.MAGENTA);
-        } else if (tvStatus.getText().toString().equals("Medium")) {
-            tvStatus.setTextColor(Color.parseColor("#FFA500"));
-        } else if (tvStatus.getText().toString().equals("High")) {
-            tvStatus.setTextColor(Color.RED);
+            viewHolder.tvStatus = (TextView) convertView.findViewById(R.id.tvStatus);
+            viewHolder.tvTaskName = (TextView) convertView.findViewById(R.id.tvTaskName);
+            convertView.setTag(viewHolder);
         } else {
-            //tvStatus.setPaintFlags(tvStatus.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            tvTaskName.setPaintFlags(tvTaskName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-
+        String taskName = task.getTaskName();
+        String taskStatus = task.getStatus();
+        viewHolder.tvTaskName.setText(taskName);
+        viewHolder.tvStatus.setText(taskStatus);
+        viewHolder.tvTaskName.setPaintFlags(viewHolder.tvTaskName.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        viewHolder.tvStatus.setTextColor(Color.BLACK);
+        if (taskStatus.equals("Low")) {
+            viewHolder.tvStatus.setTextColor(Color.MAGENTA);
+        } else if (taskStatus.equals("Medium")) {
+            viewHolder.tvStatus.setTextColor(Color.parseColor("#FFA500"));
+        } else if (taskStatus.equals("High")) {
+            viewHolder.tvStatus.setTextColor(Color.RED);
+        } else {
+            viewHolder.tvTaskName.setPaintFlags(viewHolder.tvTaskName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
         return convertView;
     }
 }

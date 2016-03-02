@@ -13,8 +13,7 @@ public class Task {
     public static final String COL_STATUS = "status";
     public static final String ARRAY_STATUS[] = { "High", "Medium", "Low", "Done" };
     public Task() {
-        this.status = "Low";
-        this.taskName = "";
+        this("Low", "");
     }
 
     public Task(String taskName, String status) {
